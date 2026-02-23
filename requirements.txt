@@ -1,6 +1,2 @@
 streamlit
-pandas
-gspread
-oauth2client
-google-genai
-requests
+google-generativeai
