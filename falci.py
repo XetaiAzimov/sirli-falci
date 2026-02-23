@@ -2,7 +2,6 @@ import streamlit as st
 from groq import Groq
 import requests
 from datetime import datetime
-import hashlib
 
 # Secrets
 GROQ_KEY = st.secrets["GROQ_API_KEY"]
@@ -20,45 +19,52 @@ def send_telegram_msg(message):
 st.set_page_config(page_title="Sirli Falçı", page_icon="🔮")
 st.title("🔮 Sirli Falçı")
 
-st.markdown("### Qiymət: **1 AZN**")
-st.info("💳 Ödəniş: **M10 (+994 XX XXX XX XX)**. Qəbzi WhatsApp-a atın, kodunuzu alın.")
+# ÖDƏNİŞ QUTUSU
+st.markdown(f"""
+<div style="background-color:#1a1a2e; padding:15px; border-radius:10px; border:1px solid #4b0082">
+    <h4 style="color:#e0e0e0">💰 Falınızı Alın (1 AZN)</h4>
+    <p>1. <b>M10 / Kart:</b> 4169 XXXX XXXX XXXX</p>
+    <p>2. Qəbzi bota göndər və kodunu al:</p>
+    <a href="https://t.me/SeninBotunUsernamesi" target="_blank">
+        <button style="background-color:#4b0082; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer">
+            📩 Qəbzi Göndər
+        </button>
+    </a>
+</div>
+""", unsafe_allow_html=True)
 
-name = st.text_input("Adınız:")
-birth_date = st.date_input("Doğum tarixiniz:", min_value=datetime(1950, 1, 1))
-u_code = st.text_input("Ödəniş Kodunuz:", type="password")
+st.markdown("---")
 
-if st.button("✨ Taleyimi Göstər"):
-    # BU GÜNÜN ŞİFRƏSİ (Məsələn: FAL + bugünkü gün)
-    # Hər gün kod avtomatik dəyişir: FAL23, FAL24 və s.
-    today_code = f"FAL{datetime.now().day}" 
+name = st.text_input("Adınız (Ödənişdəki adla eyni olmalıdır):")
+u_code = st.text_input("Sizə verilən Ödəniş Kodu:", type="password")
+
+if st.button("✨ Falıma Bax"):
+    # RİYAZİ YOXLAMA: Kod müştərinin adı + bugünkü gün olmalıdır
+    # Məsələn: Eli + 24 = Eli24
+    expected_code = f"{name}{datetime.now().day}"
     
-    # Və ya sabit kodlar siyahısı (GitHub-da hərdən dəyişərsən)
-    valid_codes = ["BEXT2026", "ULDUZ77", "QISMET11", today_code]
-
     if not name or not u_code:
-        st.warning("Xanaları doldurun!")
-    elif u_code not in valid_codes:
-        st.error("❌ Kod yanlışdır!")
+        st.warning("Zəhmət olmasa bütün xanaları doldurun.")
+    
+    elif u_code != expected_code:
+        st.error("❌ Kod yanlışdır! Kod sizin adınız və günün tarixindən ibarət olmalıdır.")
+    
     else:
-        # TARİX YOXLANIŞI
-        current_year = datetime.now().year
-        if birth_date.year > current_year:
-            st.warning("Hələ doğulmamısan ki? 😊")
-        else:
-            with st.spinner('🔮 Falın hazırlanır...'):
-                try:
-                    completion = client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",
-                        messages=[
-                            {"role": "system", "content": "Sən sirli Azərbaycanlı falçısan. Professional fal yaz."},
-                            {"role": "user", "content": f"Adım {name}, tarixim {birth_date}. Fal yaz."}
-                        ]
-                    )
-                    st.success(f"✨ {name}, taleyin:")
-                    st.write(completion.choices[0].message.content)
-                    st.balloons()
-                    
-                    # Sənə Telegramda xəbər veririk
-                    send_telegram_msg(f"💰 1 AZN! \n👤 Müştəri: {name}\n🎫 Kod: {u_code}")
-                except:
-                    st.error("Sistemdə xəta!")
+        with st.spinner('🔮 Ulduzlar skan edilir...'):
+            try:
+                completion = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": "Sən sirli Azərbaycanlı falçısan. Professional fal yaz."},
+                        {"role": "user", "content": f"Adım {name}. Mənə geniş bir fal yaz."}
+                    ]
+                )
+                st.success(f"✨ {name}, taleyin hazır!")
+                st.write(completion.choices[0].message.content)
+                st.balloons()
+                
+                # Sənə bildiriş gəlir ki, Eli bu kodu İŞLƏTDİ
+                send_telegram_msg(f"✅ 1 AZN QAZANILDI!\n👤 Müştəri: {name}\n🎫 Kod: {u_code}")
+                
+            except:
+                st.error("Sistemdə xəta!")
