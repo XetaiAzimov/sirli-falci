@@ -21,7 +21,7 @@ if st.button("Falıma Bax ☕"):
     if name and payment_code:
         with st.spinner('Ulduzlarla əlaqə qurulur...'):
             try:
-                model = genai.GenerativeModel('gemini-pro')
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 prompt = f"{name} adlı şəxs üçün Azərbaycan dilində maraqlı, sirli və pozitiv bir fal yaz."
                 response = model.generate_content(prompt)
                 
@@ -32,3 +32,4 @@ if st.button("Falıma Bax ☕"):
                 st.error(f"Xəta baş verdi: {str(e)}")
     else:
         st.info("Davam etmək üçün adınızı və ödəniş kodunuzu yazın.")
+
