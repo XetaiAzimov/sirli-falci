@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "vibrant-keyword-488310-n6",
+  "private_key_id": "28d44d27e9052bc54077df313303d51c49ba64bd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCrlQCA/N7pFjbE\naU8VIGLhWS98T16UFhIAR9DUpVfxsmh03jITi6Fjs8pZnA+2qKzvym3z6aoDX/CP\nAYr/IOsfSDegk2n9uBnq13az8HMIDREM8wz+39zPealRB/9U3JAvn5s0JN0oc+Wn\np9bFtub/rAoBD0FdtRljJfhIoqdhF3KrdMq5iWp/vxpdELycEPni0P6E7G65W7Mf\nbbY63cFpbgvOL/evVoeXZXGUrKbzAQUINuPlvPnVI6c6HhBH6fZWIgKcMveNbYAM\nWrEDXHdJ1Wd3+BrhsBXR2WsfY0PW4zI2mmJP2P+/GWwvTEAjKExriByyrB7cwsmq\nBa2tGieLAgMBAAECggEAAboEoMeqqJbQI0baBGDojdL7btlPntbgBH+0gsdNLMH6\nWh64S0kO7TVsdl1jLRficaFMXPV/f/wxrAa8ctfOdeigoq2JFgQJwrq7V5E2XyDe\niI5TlacEDlRvl0Co2Z5Ely4YfjxWu2b7KyY9u4ydI3qEOUGBi2Ncp4pExtpYK9pv\n1Nsv1nh3HhFihs14z5sLfcVXcufnd0q+Ksu1iluissyj37BDsYoh8AWzYqntw9DE\nJZkNT2M7pkOwvwoZChVjSMKxS/1fZlQMHeDD0Wb5FWSTKsNX6I6a8q9X837o7+FU\ntG/hCOtPJNKufwoK46DZzsJw5+eVSYfhkdbAhNj/nQKBgQDZqaym8otvH3Ak/vlR\ncyF/PHo7foUTOGdLQUnr9FfzUSVUYZHabDclUgVP58+oAxgNUufpaKJ+MbOvopP0\nmfFNQSbiWS3DSKslH6e0O6T/RpqD6z2KiZC1uFLmwgRvJ4hjlNzT5soaowieW3YP\njLjflI9kp0wi/B2PkLdW4D5rTQKBgQDJzZC/9K3KQmsQd4Rzebs7cviLa5RvayLO\n6aOQBgSFiCP3ihCrzDcSP04eCkp8/55z+fAbHl9ehsZU27lvQqt3JOex8y9dJI+4\nTyWdzpdBhsJWgwU4djNdRRTsdRpYKbghNWhc/yXFz3ggz409uBz2mSfRVeiL2G2t\n4g+CoASCNwKBgDBOoPvYXqvF7Wy4jfrOs4N6l6I2nTA712jzT4WnkBF3U/KbSPSS\nCdclkfo+925RaXgji0bZKx8YxslXKsEhnVVI/WlE44wwx5MQqHauuhrRv59BiUIC\n7/P0ualvK+7DdlirhCsfUIGC53nF0Lj4wVsVrJFpM9Ob4q+nLZmBYTkNAoGAaJeJ\nkWPQe0cHVKaNWIhcOUiydxhP+5tslA9V/byQtWDFO3Qshc43MNbstvcgej7GMlf1\nUSjhxw1VV//10Sud0QeoqntfLghYEO+8kFjV3llo+gu4NfZVUt8OJCvhdpZQ361d\npO1891Q7b84C5104bbsdfwrmlyyaVAgZf9tN2usCgYA3ve0XT9fW5Du8i7SGHUMQ\nF75A/RJCgV1wXW3mOfCLTarSJ/gkQAdc0rVbjWkdcTKZj/qgaB2WftziPcHIzDBR\nUEu3DjwtosOLyos1JynMp8dAT1RQMKLE9A86cQ1Mp92R4c5sJOzZxrFYVCngAiLi\nTgmvkCg79c/8Uqd0gppfqQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "falci-bot@vibrant-keyword-488310-n6.iam.gserviceaccount.com",
+  "client_id": "106533110202451861557",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/falci-bot%40vibrant-keyword-488310-n6.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
