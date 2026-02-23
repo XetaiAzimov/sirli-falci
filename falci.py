@@ -28,14 +28,14 @@ st.markdown("""
     border-radius: 15px;
     border: 2px solid #4b0082;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 st.title("🔮 Sirli Falçı")
 
-# ================== ÖDƏNİŞ ==================
+# ================== ÖDƏNİŞ BÖLMƏSİ ==================
 st.markdown(f"""
 <div class="payment-card">
 <h3 style="color:white;">💰 Fal Ödənişi: 1 AZN</h3>
@@ -57,18 +57,27 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ================== GİRİŞ ==================
-name = st.text_input("Adınız:")
-u_code = st.text_input("Kodunuz (Ad + Ayın Günü + Gizli Söz):", type="password")
+# ================== GİRİŞ BÖLMƏSİ ==================
+st.markdown("### ✨ Fal üçün məlumatlar")
 
-# ================== FAL ==================
+name = st.text_input("Adınız:")
+u_code = st.text_input(
+    "Kodunuz (Ad + Ayın Günü + Gizli Söz)",
+    type="password"
+)
+
+# ================== FAL BÖLMƏSİ ==================
 if st.button("✨ Falıma Bax"):
 
+    # Ayın gününü avtomatik götürür
     gun = datetime.now().day
+
+    # Kod formulu
     expected_code = f"{name}{gun}{GIZLI_SOZ}"
 
     if u_code == expected_code:
-        with st.spinner("🔮 Falın yazılır..."):
+
+        with st.spinner("🔮 Ulduzlar hizalanır..."):
             try:
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
@@ -86,5 +95,6 @@ if st.button("✨ Falıma Bax"):
 
             except:
                 st.error("Xəta baş verdi.")
+
     else:
         st.error("❌ Kod yanlışdır!")
