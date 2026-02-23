@@ -72,7 +72,7 @@ with col2:
 with col3:
     il = st.selectbox("İl", list(range(1950, datetime.now().year + 1)))
 
-u_code = st.text_input("Kodunuz (Ad + Bugünkü Gün + Gizli Söz):", type="password")
+u_code = st.text_input("Kodunuz:", type="password")
 
 # ================== FAL ==================
 if st.button("✨ Falıma Bax"):
@@ -106,3 +106,4 @@ if st.button("✨ Falıma Bax"):
 
     else:
         st.error("❌ Kod yanlışdır! Müştəri yalnız Ad + Bugünkü Gün + Gizli Sözü yazmalıdır.")
+
