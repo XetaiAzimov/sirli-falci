@@ -11,7 +11,7 @@ st.title("🔮 Sirli Falçı")
 # --- ADMIN HİSSƏSİ (Sənin üçün) ---
 # Sən bura hər gün və ya həftə yeni bir sirli söz yaza bilərsən
 # Müştəri ödəniş edəndə ona bu sözü deyəcəksən
-GIZLI_SOZ = "ALMA" # Bunu hərdən dəyiş (məsələn: NAR, ULDUZ, BEXT)
+GIZLI_SOZ = "Tac" # Bunu hərdən dəyiş (məsələn: NAR, ULDUZ, BEXT)
 
 st.markdown("### Ödəniş: 1 AZN")
 st.info(f"💳 M10/Kart: +994 XX XXX XX XX. Qəbzi atın, **GİZLİ SÖZÜ** alın.")
@@ -37,3 +37,4 @@ if st.button("✨ Falıma Bax"):
                 st.error("Xəta baş verdi.")
     else:
         st.error("❌ Kod yanlışdır! Gizli sözü düzgün daxil etdiyinizdən əmin olun.")
+
