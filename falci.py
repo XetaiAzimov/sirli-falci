@@ -15,7 +15,7 @@ except:
 client = Groq(api_key=GROQ_KEY)
 
 # ================== AYARLAR ==================
-GIZLI_SOZ = "Tac"
+GIZLI_SOZ = "Tac"  # İstədiyin vaxt dəyiş
 WHATSAPP_NOMRE = "994708685101"
 KART_NOMRE = "4098 0944 2188 8023"
 
@@ -28,7 +28,7 @@ st.markdown("""
     border-radius: 15px;
     border: 2px solid #4b0082;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -58,29 +58,26 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ================== GİRİŞ ==================
+st.markdown("### ✨ Fal üçün məlumatlar")
+
 name = st.text_input("Adınız:")
 
-st.markdown("### 📅 Doğum Tarixinizi Seçin")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    gun = st.selectbox("Gün", list(range(1, 32)))
-
-with col2:
-    ay = st.selectbox("Ay", list(range(1, 13)))
-
-with col3:
-    il = st.selectbox("İl", list(range(1950, datetime.now().year + 1)))
-
-u_code = st.text_input("Kodunuz (Ad + Gün + Ay + İl + Gizli Söz):", type="password")
+u_code = st.text_input(
+    f"Kodunuz (Ad + Ayın Günü + Gizli Söz)",
+    type="password"
+)
 
 # ================== FAL ==================
 if st.button("✨ Falıma Bax"):
-    
-    expected_code = f"{name}{gun}{ay}{il}{GIZLI_SOZ}"
+
+    # Sistem avtomatik bugünkü ayın gününü götürür
+    gun = datetime.now().day
+
+    # Kod formulu: Ad + Ayın Günü + Gizli Söz
+    expected_code = f"{name}{gun}{GIZLI_SOZ}"
 
     if u_code == expected_code:
+
         with st.spinner("🔮 Ulduzlar hizalanır..."):
             try:
                 completion = client.chat.completions.create(
@@ -88,7 +85,7 @@ if st.button("✨ Falıma Bax"):
                     messages=[
                         {
                             "role": "user",
-                            "content": f"Mənim adım {name}. Doğum tarixim {gun}/{ay}/{il}. Mənə geniş və sirli fal yaz."
+                            "content": f"Mənim adım {name}. Bu günün enerjisinə görə mənə geniş və sirli fal yaz."
                         }
                     ]
                 )
@@ -99,5 +96,6 @@ if st.button("✨ Falıma Bax"):
 
             except:
                 st.error("Xəta baş verdi.")
+
     else:
-        st.error("❌ Kod yanlışdır!")
+        st.error("❌ Kod yanlışdır! Müştəri sadəcə Ad + Gizli Sözü + bugünkü gün yazmalıdır.")
