@@ -17,9 +17,19 @@ MODEL_ID = "gemini-3-flash-preview"
 # Google Sheets Bağlantısı
 def get_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("keys.json", scope)
+    import json
+    
+    # DİQQƏT: Faylı yox, birbaşa Streamlit Secrets-i oxuyuruq
+    creds_info = json.loads(st.secrets["gcp_service_account"])
+    
+    # Şifrədəki gizli boşluqları düzəltmək üçün (Xətanın qarşısını alır)
+    if "private_key" in creds_info:
+        creds_info["private_key"] = creds_info["private_key"].replace("\\n", "\n")
+    
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_info, scope)
     client_gs = gspread.authorize(creds)
-    # Cədvəl ID-ni bura daxil et
+    
+    # Sənin Excel ID-n (Bunu dəyişməyə ehtiyac yoxdur)
     return client_gs.open_by_key("1g4CZiNoj78_iugBYt-V1SrPpquqlWKkCH5kasIA1m1E").sheet1
 
 def kod_yarat():
@@ -150,4 +160,5 @@ if st.button("FALIMI AÇ ✨"):
             else:
                 st.error("Hələ heç bir qeydiyyat yoxdur.")
         except Exception as e:
+
             st.error(f"Bağlantı xətası: {e}")
