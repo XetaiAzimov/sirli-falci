@@ -15,7 +15,7 @@ except:
 client = Groq(api_key=GROQ_KEY)
 
 # ================== AYARLAR ==================
-GIZLI_SOZ = "Tac"  # İstəyə görə dəyiş
+GIZLI_SOZ = "Tac"
 WHATSAPP_NOMRE = "994708685101"
 KART_NOMRE = "4098 0944 2188 8023"
 
@@ -35,7 +35,7 @@ st.markdown("""
 
 st.title("🔮 Sirli Falçı")
 
-# ================== ÖDƏNİŞ BÖLMƏSİ ==================
+# ================== ÖDƏNİŞ ==================
 st.markdown(f"""
 <div class="payment-card">
 <h3 style="color:white;">💰 Fal Ödənişi: 1 AZN</h3>
@@ -59,22 +59,36 @@ st.markdown(f"""
 
 # ================== GİRİŞ ==================
 name = st.text_input("Adınız:")
-u_code = st.text_input("Kodunuz (Ad + Gün + Gizli Söz):", type="password")
+
+st.markdown("### 📅 Doğum Tarixinizi Seçin")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    gun = st.selectbox("Gün", list(range(1, 32)))
+
+with col2:
+    ay = st.selectbox("Ay", list(range(1, 13)))
+
+with col3:
+    il = st.selectbox("İl", list(range(1950, datetime.now().year + 1)))
+
+u_code = st.text_input("Kodunuz (Ad + Gün + Ay + İl + Gizli Söz):", type="password")
 
 # ================== FAL ==================
 if st.button("✨ Falıma Bax"):
-    gun = datetime.now().day
-    expected_code = f"{name}{gun}{GIZLI_SOZ}"
+    
+    expected_code = f"{name}{gun}{ay}{il}{GIZLI_SOZ}"
 
     if u_code == expected_code:
-        with st.spinner("🔮 Falın yazılır..."):
+        with st.spinner("🔮 Ulduzlar hizalanır..."):
             try:
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[
                         {
                             "role": "user",
-                            "content": f"Adım {name}. Mənə geniş və sirli bir fal yaz."
+                            "content": f"Mənim adım {name}. Doğum tarixim {gun}/{ay}/{il}. Mənə geniş və sirli fal yaz."
                         }
                     ]
                 )
