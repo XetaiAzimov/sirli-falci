@@ -47,7 +47,7 @@ st.markdown(f"""
 
 <br>
 
-<a href="https://wa.me/{WHATSAPP_NOMRE}?text=Salam%20Mən%20fal%20üçün%20ödəniş%20etdim.%20Qəbzi%20göndərirəm."
+<a href="https://wa.me/{WHATSAPP_NOMRE}?text=Salam%20Mən%20fal%20üçün%20ödəniş%20etdim.%20Zəhmət%20olmasa gizli sözü göndərin."
    target="_blank" style="text-decoration:none;">
 <div style="background-color:#25D366; color:white; padding:12px; border-radius:10px; font-weight:bold;">
 🟢 Qəbzi WhatsApp-a Göndər
@@ -57,24 +57,31 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ================== GİRİŞ ==================
+# ================== MÜŞTƏRİ MƏLUMATLARI ==================
 st.markdown("### ✨ Fal üçün məlumatlar")
 
 name = st.text_input("Adınız:")
+soyad = st.text_input("Soyadınız:")
 
-u_code = st.text_input(
-    f"Kodunuz (Ad + Ayın Günü + Gizli Söz)",
-    type="password"
-)
+st.markdown("### 📅 Doğum Tarixinizi Seçin")
+col1, col2, col3 = st.columns(3)
+with col1:
+    gun = st.selectbox("Gün", list(range(1, 32)))
+with col2:
+    ay = st.selectbox("Ay", list(range(1, 13)))
+with col3:
+    il = st.selectbox("İl", list(range(1950, datetime.now().year + 1)))
+
+u_code = st.text_input("Kodunuz (Ad + Bugünkü Gün + Gizli Söz):", type="password")
 
 # ================== FAL ==================
 if st.button("✨ Falıma Bax"):
 
     # Sistem avtomatik bugünkü ayın gününü götürür
-    gun = datetime.now().day
+    bugun = datetime.now().day
 
-    # Kod formulu: Ad + Ayın Günü + Gizli Söz
-    expected_code = f"{name}{gun}{GIZLI_SOZ}"
+    # Kod formulu: Ad + Bugünkü Gün + Gizli söz
+    expected_code = f"{name}{bugun}{GIZLI_SOZ}"
 
     if u_code == expected_code:
 
@@ -85,7 +92,7 @@ if st.button("✨ Falıma Bax"):
                     messages=[
                         {
                             "role": "user",
-                            "content": f"Mənim adım {name}. Bu günün enerjisinə görə mənə geniş və sirli fal yaz."
+                            "content": f"Mənim adım {name} {soyad}. Doğum tarixim {gun}/{ay}/{il}. Bu günün enerjisinə görə mənə geniş və sirli fal yaz."
                         }
                     ]
                 )
@@ -98,4 +105,4 @@ if st.button("✨ Falıma Bax"):
                 st.error("Xəta baş verdi.")
 
     else:
-        st.error("❌ Kod yanlışdır! Müştəri sadəcə Ad + Gizli Sözü + bugünkü gün yazmalıdır.")
+        st.error("❌ Kod yanlışdır! Müştəri yalnız Ad + Bugünkü Gün + Gizli Sözü yazmalıdır.")
