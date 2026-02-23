@@ -3,10 +3,11 @@ import google.generativeai as genai
 
 st.set_page_config(page_title="Sirli Falçı", page_icon="🔮")
 
+# API Key yoxlanışı
 if "GEMINI_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 else:
-    st.error("API Key tapılmadı.")
+    st.error("API Key Secrets-də tapılmadı!")
 
 st.title("🔮 Sirli Falçı")
 
@@ -17,13 +18,15 @@ if st.button("Falıma Bax ☕"):
     if name and payment_code:
         with st.spinner('Ulduzlarla əlaqə qurulur...'):
             try:
-                # YENİ MODEL ADI BURADADIR
+                # Ən stabil model adı budur
                 model = genai.GenerativeModel('gemini-1.5-flash')
-                prompt = f"{name} adlı şəxs üçün Azərbaycan dilində maraqlı və pozitiv bir fal yaz."
-                response = model.generate_content(prompt)
+                response = model.generate_content(f"{name} üçün Azərbaycan dilində maraqlı fal yaz.")
                 
-                st.success(f"Hörmətli {name}, budur sənin falın:")
-                st.write(response.text)
-                st.balloons()
+                if response.text:
+                    st.success(f"Hörmətli {name}, budur sənin falın:")
+                    st.write(response.text)
+                    st.balloons()
             except Exception as e:
-                st.error(f"Xəta baş verdi: {str(e)}")
+                st.error(f"Xəta: {str(e)}")
+    else:
+        st.info("Zəhmət olmasa xanaları doldurun.")
