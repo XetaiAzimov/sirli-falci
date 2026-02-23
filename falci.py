@@ -1,32 +1,51 @@
 import streamlit as st
 import google.generativeai as genai
+import requests
+
+# Secrets
+GEMINI_KEY = st.secrets["GEMINI_API_KEY"]
+TELEGRAM_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
+CHAT_ID = st.secrets["TELEGRAM_CHAT_ID"]
+
+# Gemini Ayarı
+genai.configure(api_key=GEMINI_KEY)
+
+def send_telegram_msg(message):
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {"chat_id": CHAT_ID, "text": message}
+        requests.post(url, json=payload)
+    except:
+        pass
 
 st.set_page_config(page_title="Sirli Falçı", page_icon="🔮")
-
-# API Key yoxlanışı
-if "GEMINI_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-else:
-    st.error("API Key Secrets-də tapılmadı!")
-
 st.title("🔮 Sirli Falçı")
 
-name = st.text_input("Adınız:")
-payment_code = st.text_input("Ödəniş Kodunuz:")
+name = st.text_input("Adınız:", placeholder="Məsələn: Leyla")
+code = st.text_input("Ödəniş Kodunuz:", placeholder="Məsələn: FAL2026")
 
 if st.button("Falıma Bax ☕"):
-    if name and payment_code:
+    if name and code:
         with st.spinner('Ulduzlarla əlaqə qurulur...'):
             try:
-                # Ən stabil model adı budur
+                # Ən stabil modeli seçirik
                 model = genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(f"{name} üçün Azərbaycan dilində maraqlı fal yaz.")
+                response = model.generate_content(f"{name} adlı şəxs üçün Azərbaycan dilində maraqlı, sirli və pozitiv bir fal yaz.")
                 
-                if response.text:
-                    st.success(f"Hörmətli {name}, budur sənin falın:")
-                    st.write(response.text)
-                    st.balloons()
+                st.success(f"Hörmətli {name}, ulduzlar sizin üçün danışdı:")
+                st.write(response.text)
+                st.balloons()
+                
+                # Sənə bildiriş göndərir
+                send_telegram_msg(f"✅ Yeni müştəri!\n👤 Ad: {name}\n🎫 Kod: {code}")
+                
             except Exception as e:
-                st.error(f"Xəta: {str(e)}")
+                # Əgər 1.5-flash işləməsə, digərini yoxla
+                try:
+                    model = genai.GenerativeModel('gemini-pro')
+                    response = model.generate_content(f"{name} üçün Azərbaycan dilində fal yaz.")
+                    st.write(response.text)
+                except:
+                    st.error("Ulduzlar hazırda bir az dumanlı görünür, az sonra yenidən yoxlayın.")
     else:
-        st.info("Zəhmət olmasa xanaları doldurun.")
+        st.info("Davam etmək üçün adınızı və kodunuzu daxil edin.")
