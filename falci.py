@@ -9,7 +9,7 @@ try:
     TELEGRAM_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
     CHAT_ID = st.secrets["TELEGRAM_CHAT_ID"]
 except Exception as e:
-    st.error("Secrets (Şifrələr) bölməsində məlumatlar tapılmadı!")
+    st.error("Secrets bölməsində məlumatlar tapılmadı!")
     st.stop()
 
 # API Konfiqurasiyası
@@ -32,25 +32,41 @@ code = st.text_input("Ödəniş Kodunuz:", placeholder="FAL2026")
 if st.button("Ulduzları Soruş ☕"):
     if name and code:
         with st.spinner('Ulduzlarla əlaqə qurulur...'):
-            try:
-                # ƏN STABİL MODEL ADI
-                model = genai.GenerativeModel('gemini-1.5-flash')
-                
-                prompt = f"Sən peşəkar falçısan. {name} ({birth_date}) üçün Azərbaycan dilində maraqlı, pozitiv bir fal yaz."
-                response = model.generate_content(prompt)
-                
-                if response.text:
-                    st.markdown("### ✨ Sənin Taleyin:")
-                    st.write(response.text)
-                    st.balloons()
+            # MODELİ TAPMAQ ÜÇÜN AGILLI SISTEM
+            working_model = None
+            # Google-un tanıya biləcəyi bütün mümkün model adları
+            test_models = [
+                'models/gemini-1.5-flash', 
+                'models/gemini-1.5-flash-latest', 
+                'models/gemini-pro',
+                'gemini-1.5-flash',
+                'gemini-pro'
+            ]
+            
+            for m_name in test_models:
+                try:
+                    model = genai.GenerativeModel(m_name)
+                    # Kiçik bir test sorğusu edirik
+                    response = model.generate_content("Salam")
+                    if response:
+                        working_model = model
+                        break
+                except:
+                    continue
+            
+            if working_model:
+                try:
+                    prompt = f"Sən peşəkar falçısan. {name} ({birth_date}) üçün Azərbaycan dilində maraqlı, pozitiv bir fal yaz."
+                    final_response = working_model.generate_content(prompt)
                     
-                    # Telegram bildirişi
-                    send_telegram_msg(f"✅ Müştəri gəldi!\n👤 Ad: {name}\n📅 Doğum: {birth_date}\n🎫 Kod: {code}")
-                else:
-                    st.error("Ulduzlar susur. API Key-in aktivliyini yoxlayın.")
-
-            except Exception as e:
-                # Xətanın tam kodunu burada göstərəcək ki, səbəbi bilək
-                st.error(f"Xəta baş verdi: {str(e)}")
+                    st.markdown("### ✨ Sənin Taleyin:")
+                    st.write(final_response.text)
+                    st.balloons()
+                    send_telegram_msg(f"✅ Yeni Fal!\n👤 Ad: {name}\n📅 Doğum: {birth_date}\n🎫 Kod: {code}")
+                except Exception as final_err:
+                    st.error(f"Fal hazırlanarkən xəta: {str(final_err)}")
+            else:
+                st.error("Xəta: Google sənin API açarına heç bir model (Flash və ya Pro) üçün icazə vermir.")
+                st.info("Zəhmət olmasa Google AI Studio-da 'Gemini API' bölməsində modelin aktiv olduğunu yoxla.")
     else:
         st.info("Zəhmət olmasa xanaları doldurun.")
