@@ -1,13 +1,13 @@
 import streamlit as st
 import google.generativeai as genai
 import requests
+from datetime import datetime
 
 # Secrets
 GEMINI_KEY = st.secrets["GEMINI_API_KEY"]
 TELEGRAM_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = st.secrets["TELEGRAM_CHAT_ID"]
 
-# Gemini Ayarı
 genai.configure(api_key=GEMINI_KEY)
 
 def send_telegram_msg(message):
@@ -19,33 +19,44 @@ def send_telegram_msg(message):
         pass
 
 st.set_page_config(page_title="Sirli Falçı", page_icon="🔮")
+
+# Dizaynı bir az gözəlləşdirək
 st.title("🔮 Sirli Falçı")
+st.markdown("---")
+st.write("Ulduzlar sənin üçün nə hazırlayıb? Doğum tarixini və adını yaz, taleyini öyrən.")
 
+# Girişlər
 name = st.text_input("Adınız:", placeholder="Məsələn: Leyla")
-code = st.text_input("Ödəniş Kodunuz:", placeholder="Məsələn: FAL2026")
+birth_date = st.date_input("Doğum tarixiniz:", min_value=datetime(1950, 1, 1), max_value=datetime.now())
+code = st.text_input("Ödəniş Kodunuz:", placeholder="FAL2026")
 
-if st.button("Falıma Bax ☕"):
+if st.button("Ulduzları Soruş ☕"):
     if name and code:
-        with st.spinner('Ulduzlarla əlaqə qurulur...'):
+        with st.spinner('Planetlərin hərəkəti izlənilir...'):
             try:
-                # Ən stabil modeli seçirik
                 model = genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(f"{name} adlı şəxs üçün Azərbaycan dilində maraqlı, sirli və pozitiv bir fal yaz.")
                 
-                st.success(f"Hörmətli {name}, ulduzlar sizin üçün danışdı:")
-                st.write(response.text)
-                st.balloons()
+                # Gemini-yə doğum tarixini də göndəririk ki, bürclə bağlı danışsın
+                prompt = f"""
+                Sən sirli və uzaqgörən bir falçısan. 
+                Adı {name} olan və doğum tarixi {birth_date} olan bir şəxs üçün Azərbaycan dilində maraqlı fal yaz. 
+                Onun doğum tarixinə görə bürcünü müəyyən et və gələcəyi haqqında sirli, müsbət proqnozlar ver.
+                """
                 
-                # Sənə bildiriş göndərir
-                send_telegram_msg(f"✅ Yeni müştəri!\n👤 Ad: {name}\n🎫 Kod: {code}")
+                response = model.generate_content(prompt)
                 
-            except Exception as e:
-                # Əgər 1.5-flash işləməsə, digərini yoxla
-                try:
-                    model = genai.GenerativeModel('gemini-pro')
-                    response = model.generate_content(f"{name} üçün Azərbaycan dilində fal yaz.")
+                if response.text:
+                    st.markdown("### ✨ Sənin Taleyin:")
                     st.write(response.text)
-                except:
-                    st.error("Ulduzlar hazırda bir az dumanlı görünür, az sonra yenidən yoxlayın.")
+                    st.balloons()
+                    
+                    # Telegram bildirişi
+                    notif = f"🔮 Yeni Fal!\n👤 Ad: {name}\n📅 Doğum: {birth_date}\n🎫 Kod: {code}"
+                    send_telegram_msg(notif)
+                else:
+                    st.warning("Ulduzlar hazırda görünmür, bir az sonra yoxla.")
+
+            except Exception as e:
+                st.error(f"Xəta: {str(e)}")
     else:
-        st.info("Davam etmək üçün adınızı və kodunuzu daxil edin.")
+        st.info("Zəhmət olmasa adınızı və kodunuzu daxil edin.")
