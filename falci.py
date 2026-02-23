@@ -35,7 +35,7 @@ font-size:16px;">
 </a>
 """, unsafe_allow_html=True)
 
-st.info("💳 M10/Kart: +994 70 868 51 01\n\nQəbzi göndər, gizli sözü al, sonra kodu daxil et.")
+st.info("💳 M10/Kart: 4098 0944 2188 8023 \n\nQəbzi göndər, gizli sözü al, sonra kodu daxil et.")
 
 # ================== İSTİFADƏÇİ MƏLUMATLARI ==================
 name = st.text_input("Adınız:")
@@ -67,3 +67,4 @@ if st.button("✨ Falıma Bax"):
                 st.error("Xəta baş verdi.")
     else:
         st.error("❌ Kod yanlışdır! Gizli sözü düzgün daxil etdiyinizdən əmin olun.")
+
