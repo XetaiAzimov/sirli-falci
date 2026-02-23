@@ -35,7 +35,7 @@ st.markdown("""
 
 st.title("🔮 Sirli Falçı")
 
-# ================== ÖDƏNİŞ BÖLMƏSİ ==================
+# ================== ÖDƏNİŞ ==================
 st.markdown(f"""
 <div class="payment-card">
 <h3 style="color:white;">💰 Fal Ödənişi: 1 AZN</h3>
@@ -61,30 +61,29 @@ st.markdown(f"""
 st.markdown("### ✨ Fal üçün məlumatlar")
 
 name = st.text_input("Adınız:")
+
+# Müştəri gün seçir
+gun = st.selectbox("📅 Ayın günü", list(range(1, 32)))
+
 u_code = st.text_input(
-    "Kodunuz (Ad + Ayın Günü + Gizli Söz)",
-    type="password"
+    f"Kodunuz (Ad + {gun} + Gizli Söz)", type="password"
 )
 
 # ================== FAL BÖLMƏSİ ==================
 if st.button("✨ Falıma Bax"):
 
-    # Ayın gününü avtomatik götürür
-    gun = datetime.now().day
-
-    # Kod formulu
     expected_code = f"{name}{gun}{GIZLI_SOZ}"
 
     if u_code == expected_code:
 
-        with st.spinner("🔮 Ulduzlar hizalanır..."):
+        with st.spinner("🔮 Falın yazılır..."):
             try:
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[
                         {
                             "role": "user",
-                            "content": f"Mənim adım {name}. Bu günün enerjisinə görə mənə geniş və sirli fal yaz."
+                            "content": f"Mənim adım {name}. Ayın {gun}-ünə görə mənə geniş və sirli fal yaz."
                         }
                     ]
                 )
