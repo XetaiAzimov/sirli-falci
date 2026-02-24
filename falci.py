@@ -4,7 +4,7 @@ from datetime import datetime
 import time
 
 # ================== SƏHİFƏ AYARI ==================
-st.set_page_config(page_title="Sirli Falçı 🔮", page_icon="🔮", layout="centered")
+st.set_page_config(page_title="Sirli Falçı", page_icon="🔮", layout="centered")
 
 # ================== YADDAŞI (SESSION STATE) BAŞLATMA ==================
 if 'payment_verified' not in st.session_state:
@@ -168,3 +168,4 @@ if st.button("✨ Falıma Bax"):
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
     else:
         st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
+
