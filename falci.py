@@ -3,24 +3,25 @@ from groq import Groq
 from datetime import datetime
 import time
 
-# ================== SƏHİFƏ AYARI (Favicon və Başlıq) ==================
-st.set_page_config(
-    page_title="Sirli Falçı", 
-    page_icon="🔮", 
-    layout="centered",
-    initial_sidebar_state="collapsed" # Sidebar-ı gizlədir ki, daha təmiz görünsün
-)
+# ================== SƏHİFƏ AYARI ==================
+st.set_page_config(page_title="Sirli Falçı 🔮", page_icon="🔮", layout="centered")
+
+# ================== YADDAŞI (SESSION STATE) BAŞLATMA ==================
+if 'payment_verified' not in st.session_state:
+    st.session_state.payment_verified = False
+if 'generated_code' not in st.session_state:
+    st.session_state.generated_code = ""
 
 # ================== SECRETS ==================
 try:
     GROQ_KEY = st.secrets["GROQ_API_KEY"]
 except:
-    st.error("XƏTA: API açarı tapılmadı.")
+    st.error("API açarı tapılmadı.")
     st.stop()
 
 client = Groq(api_key=GROQ_KEY)
 
-# ================== AYARLAR & FUNKSİYALAR ==================
+# ================== AYARLAR ==================
 GIZLI_SOZLER = {
     1: "Ugur", 2: "Tac", 3: "Bahar", 4: "Ulduz", 5: "Gunesh",
     6: "Deniz", 7: "Xezri", 8: "Zirve", 9: "Yarpag", 10: "Cinar",
@@ -45,24 +46,16 @@ def burc_tap(gun, ay):
 # ================== DİZAYN (CSS) ==================
 st.markdown("""
 <style>
-    /* Streamlit-in standart detallarını gizlədirik */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
+    #MainMenu, footer, header {visibility: hidden;}
     .main { background-color: #0e1117; }
-    
     .payment-box {
         background: linear-gradient(135deg, #15152e 0%, #050510 100%);
         padding: 25px;
         border-radius: 15px;
         border: 2px solid #4b0082;
         text-align: center;
-        box-shadow: 0px 4px 15px rgba(75, 0, 130, 0.5);
         margin-bottom: 20px;
     }
-    
-    /* Kart nömrəsinin yazıldığı kod blokunun rəngini tündləşdiririk */
     code {
         background-color: #1a1a2e !important;
         color: #00ffcc !important;
@@ -70,7 +63,6 @@ st.markdown("""
         border-radius: 5px;
         font-size: 20px !important;
     }
-    
     h1 { color: #9d50bb; text-align: center; font-family: 'Georgia', serif; }
 </style>
 """, unsafe_allow_html=True)
@@ -87,7 +79,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ================== MÜŞTƏRİ MƏLUMATLARI ==================
-st.write("### ✨ Məlumatları doldurun")
 name = st.text_input("Adınız:", placeholder="Kodu almaq üçün vacibdir")
 soyad = st.text_input("Soyadınız:", placeholder="Könüllüdür")
 
@@ -106,35 +97,43 @@ user_burc = burc_tap(gun, ay)
 # ================== TƏHLÜKƏSİZ KOD GENERATORU ==================
 if name:
     st.markdown("---")
-    cek_no = st.text_input("🧾 Qəbz nömrəsi və ya əməliyyat vaxtı:", placeholder="Məs: 14:35")
+    # Əgər ödəniş hələ təsdiqlənməyibsə, yoxlama panelini göstər
+    if not st.session_state.payment_verified:
+        cek_no = st.text_input("🧾 Qəbz nömrəsi və ya əməliyyat vaxtı:", placeholder="Məs: 14:35")
+        st.warning("⚠️ Diqqət: Ödəniş etmədən saxta məlumat daxil edənlər bloklanır.")
+        
+        if st.button("✅ Ödənişi Təsdiqlə və Kodumu Al"):
+            if len(cek_no) < 2:
+                st.error("❗ Zəhmət olmasa qəbz məlumatını daxil edin!")
+            else:
+                with st.status("🔍 Ödəniş yoxlanılır...", expanded=True) as status:
+                    time.sleep(3); st.write("📡 Serverlərlə əlaqə qurulur...")
+                    time.sleep(4); st.write("💹 Əməliyyat ID-si təsdiqlənir...")
+                    time.sleep(2)
+                    status.update(label="✅ Ödəniş təsdiqləndi!", state="complete", expanded=False)
+                
+                indi = datetime.now()
+                gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
+                st.session_state.generated_code = f"{name.strip().lower()}{indi.day}{indi.hour}{gizli_s.lower()}"
+                st.session_state.payment_verified = True
+                st.rerun() # Səhifəni yeniləyirik ki, kod görünsün
     
-    st.warning("⚠️ Diqqət: Ödəniş etmədən saxta məlumat daxil edənlərin girişi bloklanır.")
-    
-    if st.checkbox("✅ 1 AZN ödəniş etdiyimi təsdiqləyirəm"):
-        if len(cek_no) < 2:
-            st.error("❗ Zəhmət olmasa qəbz məlumatını daxil edin!")
-        else:
-            with st.status("🔍 Ödəniş yoxlanılır...", expanded=True) as status:
-                time.sleep(3)
-                st.write("📡 Serverlərlə əlaqə qurulur...")
-                time.sleep(4)
-                st.write("💹 Əməliyyat ID-si təsdiqlənir...")
-                time.sleep(3)
-                status.update(label="✅ Ödəniş təsdiqləndi!", state="complete", expanded=False)
-            
-            indi = datetime.now()
-            bu_saat = indi.hour
-            gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
-            hazir_kod = f"{name.strip().lower()}{indi.day}{bu_saat}{gizli_s.lower()}"
-            
-            st.success(f"Təşəkkürlər! Giriş kodunuz: **{hazir_kod}**")
-            st.warning("⏳ Diqqət: Bu kod təhlükəsizlik üçün cəmi **15 dəqiqə** qüvvədədir.")
+    # Ödəniş təsdiqlənibsə, kodu sabit göstər
+    else:
+        st.success(f"🎊 Təsdiqləndi! Sizin giriş kodunuz: **{st.session_state.generated_code}**")
+        st.warning("⏳ Bu kod 15 dəqiqə ərzində aktivdir. Kodu kopyalayıb aşağıya yazın.")
 else:
     st.info("ℹ️ Kodu görmək üçün yuxarıda adınızı daxil edin.")
 
 # ================== FAL BÖLMƏSİ ==================
 st.write("---")
-u_code = st.text_input("Kodunuz:", type="password")
+u_code = st.text_input("Kodunuzu daxil edin:", type="password")
+
+# Maraqlı cümlə (Advice hissəsi)
+if not u_code:
+    st.markdown("*“Ulduzlar sənin haqqında pıçıldayır, sadəcə kodu yaz və onları dinlə...”*")
+else:
+    st.markdown("*“Kod daxil edildi. Qədim ruhlar sənin taleyini vərəqləməyə hazırlaşır...”*")
 
 if st.button("✨ Falıma Bax"):
     if name and u_code:
@@ -167,4 +166,5 @@ if st.button("✨ Falıma Bax"):
                     st.error("Ulduzlarla əlaqə kəsildi.")
         else:
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
-
+    else:
+        st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
