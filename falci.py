@@ -5,7 +5,7 @@ import time
 
 # ================== SƏHİFƏ AYARI (Favicon və Başlıq) ==================
 st.set_page_config(
-    page_title="Sirli Falçı 🔮", 
+    page_title="Sirli Falçı", 
     page_icon="🔮", 
     layout="centered",
     initial_sidebar_state="collapsed" # Sidebar-ı gizlədir ki, daha təmiz görünsün
@@ -167,3 +167,4 @@ if st.button("✨ Falıma Bax"):
                     st.error("Ulduzlarla əlaqə kəsildi.")
         else:
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
+
