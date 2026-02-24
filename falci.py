@@ -1,16 +1,21 @@
 import streamlit as st
 from groq import Groq
 from datetime import datetime
-import time  # Gözləmə simulyasiyası üçün lazımdır
+import time
 
-# ================== SƏHİFƏ AYARI ==================
-st.set_page_config(page_title="Sirli Falçı 🔮", page_icon="🔮", layout="centered")
+# ================== SƏHİFƏ AYARI (Favicon və Başlıq) ==================
+st.set_page_config(
+    page_title="Sirli Falçı 🔮", 
+    page_icon="🔮", 
+    layout="centered",
+    initial_sidebar_state="collapsed" # Sidebar-ı gizlədir ki, daha təmiz görünsün
+)
 
 # ================== SECRETS ==================
 try:
     GROQ_KEY = st.secrets["GROQ_API_KEY"]
 except:
-    st.error("XƏTA: GROQ_API_KEY tapılmadı! Zəhmət olmasa Streamlit Secrets hissəsinə əlavə edin.")
+    st.error("XƏTA: API açarı tapılmadı.")
     st.stop()
 
 client = Groq(api_key=GROQ_KEY)
@@ -40,9 +45,15 @@ def burc_tap(gun, ay):
 # ================== DİZAYN (CSS) ==================
 st.markdown("""
 <style>
+    /* Streamlit-in standart detallarını gizlədirik */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
     .main { background-color: #0e1117; }
+    
     .payment-box {
-        background: linear-gradient(135deg, #1e1e3f 0%, #0b0b1a 100%);
+        background: linear-gradient(135deg, #15152e 0%, #050510 100%);
         padding: 25px;
         border-radius: 15px;
         border: 2px solid #4b0082;
@@ -50,8 +61,17 @@ st.markdown("""
         box-shadow: 0px 4px 15px rgba(75, 0, 130, 0.5);
         margin-bottom: 20px;
     }
+    
+    /* Kart nömrəsinin yazıldığı kod blokunun rəngini tündləşdiririk */
+    code {
+        background-color: #1a1a2e !important;
+        color: #00ffcc !important;
+        padding: 10px !important;
+        border-radius: 5px;
+        font-size: 20px !important;
+    }
+    
     h1 { color: #9d50bb; text-align: center; font-family: 'Georgia', serif; }
-    .stButton>button { background-color: #4b0082; color: white; border-radius: 8px; width: 100%; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -61,15 +81,15 @@ st.title("🔮 Sirli Falçı")
 st.markdown(f"""
 <div class="payment-box">
     <h3 style="color:white; margin-bottom:5px;">💳 Fal Ödənişi: 1 AZN</h3>
-    <p style="color:#bbb; font-size:14px;">Ödənişi aşağıdakı karta (UniBank/Leo) edin və məlumatları doldurun:</p>
-    <code style="font-size:24px; color:#00ffcc;">{KART_NOMRE}</code>
+    <p style="color:#bbb;">Ödənişi aşağıdakı karta edin:</p>
+    <code>{KART_NOMRE}</code>
 </div>
 """, unsafe_allow_html=True)
 
 # ================== MÜŞTƏRİ MƏLUMATLARI ==================
-st.write("### ✨ Falına baxılacaq şəxsin məlumatları")
-name = st.text_input("Ad (Kodu almaq üçün mütləqdir):", placeholder="Məsələn: Xətai")
-soyad = st.text_input("Soyad (Könüllü):", placeholder="Məsələn: Məmmədov")
+st.write("### ✨ Məlumatları doldurun")
+name = st.text_input("Adınız:", placeholder="Kodu almaq üçün vacibdir")
+soyad = st.text_input("Soyadınız:", placeholder="Könüllüdür")
 
 st.markdown("#### 📅 Doğum Tarixi")
 cari_il = datetime.now().year
@@ -86,24 +106,19 @@ user_burc = burc_tap(gun, ay)
 # ================== TƏHLÜKƏSİZ KOD GENERATORU ==================
 if name:
     st.markdown("---")
-    st.write("### 🔑 Giriş Kodunu Aktivləşdir")
+    cek_no = st.text_input("🧾 Qəbz nömrəsi və ya əməliyyat vaxtı:", placeholder="Məs: 14:35")
     
-    # 1. Psixoloji Baryer: Qəbz rəqəmi tələbi
-    cek_no = st.text_input("🧾 Ödəniş qəbzinin son 4 rəqəmini daxil edin:", placeholder="Məsələn: 4582")
-    
-    # 2. Xəbərdarlıq mətni
-    st.warning("⚠️ Diqqət: Sistem bank terminalları ilə sinxronizasiya olunub. Ödəniş etmədən saxta məlumat daxil edənlərin girişi avtomatik bloklanır.")
+    st.warning("⚠️ Diqqət: Ödəniş etmədən saxta məlumat daxil edənlərin girişi bloklanır.")
     
     if st.checkbox("✅ 1 AZN ödəniş etdiyimi təsdiqləyirəm"):
         if len(cek_no) < 2:
-            st.error("❗ Zəhmət olmasa qəbzin son 4 rəqəmini daxil edin!")
+            st.error("❗ Zəhmət olmasa qəbz məlumatını daxil edin!")
         else:
-            # 3. Gözləmə Simulyasiyası (10 saniyə)
-            with st.status("🔍 Ödəniş bank sistemi ilə yoxlanılır...", expanded=True) as status:
-                time.sleep(4)
-                st.write("📡 Bank serverinə qoşulur...")
+            with st.status("🔍 Ödəniş yoxlanılır...", expanded=True) as status:
                 time.sleep(3)
-                st.write("💹 Əməliyyat ID-si yoxlanılır...")
+                st.write("📡 Serverlərlə əlaqə qurulur...")
+                time.sleep(4)
+                st.write("💹 Əməliyyat ID-si təsdiqlənir...")
                 time.sleep(3)
                 status.update(label="✅ Ödəniş təsdiqləndi!", state="complete", expanded=False)
             
@@ -113,16 +128,15 @@ if name:
             hazir_kod = f"{name.strip().lower()}{indi.day}{bu_saat}{gizli_s.lower()}"
             
             st.success(f"Təşəkkürlər! Giriş kodunuz: **{hazir_kod}**")
-            st.info(f"💡 Bu kod saat {bu_saat}:59-a qədər aktivdir. Kodu kopyalayıb aşağıdakı xanaya yazın.")
-            st.toast("Ödəniş qeydə alındı!", icon='💰')
+            st.warning("⏳ Diqqət: Bu kod təhlükəsizlik üçün cəmi **15 dəqiqə** qüvvədədir.")
 else:
-    st.info("ℹ️ Kodu görmək üçün əvvəlcə yuxarıda 'Ad' bölməsini doldurun.")
+    st.info("ℹ️ Kodu görmək üçün yuxarıda adınızı daxil edin.")
 
 # ================== FAL BÖLMƏSİ ==================
 st.write("---")
-u_code = st.text_input("Aldığınız kodu bura daxil edin:", type="password")
+u_code = st.text_input("Kodunuz:", type="password")
 
-if st.button("✨ Taleyi Oxu"):
+if st.button("✨ Falıma Bax"):
     if name and u_code:
         indi = datetime.now()
         bugun = indi.day
@@ -136,27 +150,20 @@ if st.button("✨ Taleyi Oxu"):
         ]
 
         if u_code.strip().lower() in correct_codes:
-            with st.spinner("🔮 Ulduzlar hizalanır, taleyin vərəqlənir..."):
+            with st.spinner("🔮 Taleyin vərəqlənir..."):
                 try:
                     yas = cari_il - il
-                    prompt = (f"Sən müdrik bir azərbaycanlı falçısan. Namizəd: {name} {soyad}. "
-                             f"Yaşı: {yas}, Bürcü: {user_burc}. ")
-                    
-                    if yas < 12:
-                        prompt += "Bu uşaqdır. Onun gələcək istedadları və xarakteri haqqında valideynlərinə maraqlı fal yaz."
-                    else:
-                        prompt += f"Bu şəxs üçün sirli, poetik və {user_burc} bürcünə uyğun fal yaz."
+                    prompt = (f"Sən müdrik bir azərbaycanlı falçısan. Namizəd: {name}. "
+                             f"Yaşı: {yas}, Bürcü: {user_burc}. Fal sirli və poetik olsun.")
                     
                     completion = client.chat.completions.create(
                         model="llama-3.3-70b-versatile",
                         messages=[{"role": "user", "content": prompt}]
                     )
-                    st.markdown(f"### 🔮 {user_burc} bürcü altında doğulan {name}, bax gör ulduzlar nə deyir...")
+                    st.markdown(f"### 🔮 {user_burc} bürcü, {name}...")
                     st.write(completion.choices[0].message.content)
                     st.balloons()
                 except:
-                    st.error("Ulduzlarla əlaqə kəsildi. Bir az sonra yenidən cəhd edin.")
+                    st.error("Ulduzlarla əlaqə kəsildi.")
         else:
-            st.error("❌ Kod yanlışdır və ya vaxtı bitib. Zəhmət olmasa ödəniş edib yeni kod alın.")
-    else:
-        st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
+            st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
