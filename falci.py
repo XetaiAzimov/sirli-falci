@@ -134,7 +134,6 @@ if not u_code:
     st.markdown("*“Ulduzlar sənin haqqında pıçıldayır, sadəcə kodu yaz və onları dinlə...”*")
 else:
     st.markdown("*“Kod daxil edildi. Qədim ruhlar sənin taleyini vərəqləməyə hazırlaşır...”*")
-
 if st.button("✨ Falıma Bax"):
     if name and u_code:
         indi = datetime.now()
@@ -151,21 +150,33 @@ if st.button("✨ Falıma Bax"):
         if u_code.strip().lower() in correct_codes:
             with st.spinner("🔮 Taleyin vərəqlənir..."):
                 try:
+                    # ================== YENİ GİZEMLİ PROMPT BURADAN BAŞLAYIR ==================
                     yas = cari_il - il
-                    prompt = (f"Sən müdrik bir azərbaycanlı falçısan. Namizəd: {name}. "
-                             f"Yaşı: {yas}, Bürcü: {user_burc}. Fal sirli və poetik olsun.")
-                    
+                    if yas < 12:
+                        rol_telimati = (f"Sən qədim ruhların dilini bilən, müdrik və şəfqətli bir azərbaycanlı falçısan. "
+                                        f"Namizəd: {name}. Yaşı: {yas} (bu bir uşaqdır), Bürcü: {user_burc}. "
+                                        f"Valideynlərinə bu uşaq haqqında sirli, parlaq və maraqlı bir fal yaz.")
+                    else:
+                        rol_telimati = (f"Sən əsrlərin tozunu udmuş, ulduzların dilini oxuyan qədim və sirli bir azərbaycanlı falçısan. "
+                                        f"Müştərin: {name}, Bürcü: {user_burc}, Yaşı: {yas}. "
+                                        f"Onun üçün uzun (minimum 3-4 abzas), dərin mənalı, gizemli və poetik bir fal yaz. "
+                                        f"Azərbaycan dilinin zənginliyindən istifadə et. Əvvəlcə bürcün xüsusiyyətlərindən başla, "
+                                        f"sonra sevgi, iş və gözlənilməz xəbərlər haqqında proqnozlar ver. "
+                                        f"Sonda isə ona sirli bir məsləhət və ya xəbərdarlıq qoy.")
+
+                    # API-ya göndərilən hissə
                     completion = client.chat.completions.create(
                         model="llama-3.3-70b-versatile",
-                        messages=[{"role": "user", "content": prompt}]
+                        messages=[{"role": "user", "content": rol_telimati}]
                     )
+                    # ================== YENİ PROMPT BURADA BİTİR ==================
+                    
                     st.markdown(f"### 🔮 {user_burc} bürcü, {name}...")
                     st.write(completion.choices[0].message.content)
                     st.balloons()
-                except:
-                    st.error("Ulduzlarla əlaqə kəsildi.")
+                except Exception as e:
+                    st.error(f"Ulduzlarla əlaqə kəsildi: {e}")
         else:
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
     else:
         st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
-
