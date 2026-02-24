@@ -137,41 +137,38 @@ else:
 if st.button("✨ Falıma Bax"):
     if name and u_code:
         indi = datetime.now()
-        bugun = indi.day
+        gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
         bu_saat = indi.hour
         kecen_saat = bu_saat - 1 if bu_saat > 0 else 23
-        gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
         
         correct_codes = [
-            f"{name.strip().lower()}{bugun}{bu_saat}{gizli_s.lower()}",
-            f"{name.strip().lower()}{bugun}{kecen_saat}{gizli_s.lower()}"
+            f"{name.strip().lower()}{indi.day}{bu_saat}{gizli_s.lower()}",
+            f"{name.strip().lower()}{indi.day}{kecen_saat}{gizli_s.lower()}"
         ]
 
         if u_code.strip().lower() in correct_codes:
             with st.spinner("🔮 Taleyin vərəqlənir..."):
                 try:
-                    # ================== YENİ GİZEMLİ PROMPT BURADAN BAŞLAYIR ==================
                     yas = cari_il - il
+                    # Mistik və sirli yeni prompt məntiqi
                     if yas < 12:
-                        prompt = (f"Sən qədim ruhların dilini bilən, müdrik bir azərbaycanlı baxıcısan. "
-                                  f"Uşağın adı: {name}, Bürcü: {user_burc}. "
-                                  f"Onun gələcəyi haqqında çox sirli, poetik və valideynlərini heyran qoyacaq bir fal aç. "
-                                  f"Bürc terminlərindən uzaq dur, daha çox uşağın ruhu, gələcək uğurları və 'ulduzunun parlaqlığı' haqqında danış.")
+                        final_prompt = (f"Sən qədim ruhların dilini bilən, müdrik bir azərbaycanlı baxıcısan. "
+                                       f"Uşağın adı: {name}, Bürcü: {user_burc}. "
+                                       f"Onun gələcəyi haqqında çox sirli, poetik və valideynlərini heyran qoyacaq bir fal aç. "
+                                       f"Bürc terminlərindən uzaq dur, uşağın ruhu və parlaq gələcəyi haqqında danış.")
                     else:
-                        prompt = (f"Sən qaranlıq otaqda əyləşmiş, qarşısında su aynası olan qədim bir falçısan. "
-                                  f"Müştərin: {name}, Bürcü: {user_burc}. "
-                                  f"DİQQƏT: 'Bürc' sözünü və bürcün adını mətnin içində durmadan təkrarlama! "
-                                  f"Sanki onun ruhunu oxuyursanmış kimi danış. 'Görürəm ki...', 'Uzaqlardan bir səs gəlir...', "
-                                  f"'Yolun dumanlıdır amma...', 'Qəlbində gizli bir arzun var...' kimi sirli cümlələr istifadə et. "
-                                  f"Mətn çox poetik, bir az qorxulu, amma sonda ümidverici olsun. "
-                                  f"Müştəriyə adı ilə müraciət et, amma bürc dərsi keçmə. Gələcək xəbərləri simvollarla izah et (məsələn: ağ quş, qızıl açar, köhnə qapı).")
+                        final_prompt = (f"Sən qaranlıq otaqda əyləşmiş, qarşısında su aynası olan qədim bir falçısan. "
+                                       f"Müştərin: {name}, Bürcü: {user_burc}. "
+                                       f"DİQQƏT: 'Bürc' sözünü və bürcün adını (məsələn: {user_burc}) mətnin içində durmadan təkrarlama! "
+                                       f"Sanki onun ruhunu oxuyursanmış kimi danış. 'Görürəm ki...', 'Uzaqlardan bir səs gəlir...' "
+                                       f"kimi sirli cümlələr istifadə et. Mətn poetik və gizemli olsun. "
+                                       f"Müştəriyə adı ilə müraciət et, amma bürc dərsi keçmə. Gələcəyi simvollarla izah et.")
 
-                    # API-ya göndərilən hissə
+                    # Burada content=final_prompt yazdıq ki, yuxarıdakı dəyişəni oxusun
                     completion = client.chat.completions.create(
                         model="llama-3.3-70b-versatile",
-                        messages=[{"role": "user", "content": rol_telimati}]
+                        messages=[{"role": "user", "content": final_prompt}]
                     )
-                    # ================== YENİ PROMPT BURADA BİTİR ==================
                     
                     st.markdown(f"### 🔮 {user_burc} bürcü, {name}...")
                     st.write(completion.choices[0].message.content)
@@ -182,4 +179,3 @@ if st.button("✨ Falıma Bax"):
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
     else:
         st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
-
