@@ -153,16 +153,18 @@ if st.button("✨ Falıma Bax"):
                     # ================== YENİ GİZEMLİ PROMPT BURADAN BAŞLAYIR ==================
                     yas = cari_il - il
                     if yas < 12:
-                        rol_telimati = (f"Sən qədim ruhların dilini bilən, müdrik və şəfqətli bir azərbaycanlı falçısan. "
-                                        f"Namizəd: {name}. Yaşı: {yas} (bu bir uşaqdır), Bürcü: {user_burc}. "
-                                        f"Valideynlərinə bu uşaq haqqında sirli, parlaq və maraqlı bir fal yaz.")
+                        prompt = (f"Sən qədim ruhların dilini bilən, müdrik bir azərbaycanlı baxıcısan. "
+                                  f"Uşağın adı: {name}, Bürcü: {user_burc}. "
+                                  f"Onun gələcəyi haqqında çox sirli, poetik və valideynlərini heyran qoyacaq bir fal aç. "
+                                  f"Bürc terminlərindən uzaq dur, daha çox uşağın ruhu, gələcək uğurları və 'ulduzunun parlaqlığı' haqqında danış.")
                     else:
-                        rol_telimati = (f"Sən əsrlərin tozunu udmuş, ulduzların dilini oxuyan qədim və sirli bir azərbaycanlı falçısan. "
-                                        f"Müştərin: {name}, Bürcü: {user_burc}, Yaşı: {yas}. "
-                                        f"Onun üçün uzun (minimum 3-4 abzas), dərin mənalı, gizemli və poetik bir fal yaz. "
-                                        f"Azərbaycan dilinin zənginliyindən istifadə et. Əvvəlcə bürcün xüsusiyyətlərindən başla, "
-                                        f"sonra sevgi, iş və gözlənilməz xəbərlər haqqında proqnozlar ver. "
-                                        f"Sonda isə ona sirli bir məsləhət və ya xəbərdarlıq qoy.")
+                        prompt = (f"Sən qaranlıq otaqda əyləşmiş, qarşısında su aynası olan qədim bir falçısan. "
+                                  f"Müştərin: {name}, Bürcü: {user_burc}. "
+                                  f"DİQQƏT: 'Bürc' sözünü və bürcün adını mətnin içində durmadan təkrarlama! "
+                                  f"Sanki onun ruhunu oxuyursanmış kimi danış. 'Görürəm ki...', 'Uzaqlardan bir səs gəlir...', "
+                                  f"'Yolun dumanlıdır amma...', 'Qəlbində gizli bir arzun var...' kimi sirli cümlələr istifadə et. "
+                                  f"Mətn çox poetik, bir az qorxulu, amma sonda ümidverici olsun. "
+                                  f"Müştəriyə adı ilə müraciət et, amma bürc dərsi keçmə. Gələcək xəbərləri simvollarla izah et (məsələn: ağ quş, qızıl açar, köhnə qapı).")
 
                     # API-ya göndərilən hissə
                     completion = client.chat.completions.create(
@@ -180,3 +182,4 @@ if st.button("✨ Falıma Bax"):
             st.error("❌ Kod yanlışdır və ya vaxtı bitib.")
     else:
         st.warning("⚠️ Ad və kodu daxil etmək mütləqdir!")
+
