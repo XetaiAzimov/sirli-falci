@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 from datetime import datetime
+import time  # Gözləmə simulyasiyası üçün lazımdır
 
 # ================== SƏHİFƏ AYARI ==================
 st.set_page_config(page_title="Sirli Falçı 🔮", page_icon="🔮", layout="centered")
@@ -50,7 +51,7 @@ st.markdown("""
         margin-bottom: 20px;
     }
     h1 { color: #9d50bb; text-align: center; font-family: 'Georgia', serif; }
-    .stButton>button { background-color: #4b0082; color: white; border-radius: 8px; font-weight: bold; }
+    .stButton>button { background-color: #4b0082; color: white; border-radius: 8px; width: 100%; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -60,7 +61,7 @@ st.title("🔮 Sirli Falçı")
 st.markdown(f"""
 <div class="payment-box">
     <h3 style="color:white; margin-bottom:5px;">💳 Fal Ödənişi: 1 AZN</h3>
-    <p style="color:#bbb;">Ödənişi aşağıdakı karta edin və adınızı yazıb kodu götürün:</p>
+    <p style="color:#bbb; font-size:14px;">Ödənişi aşağıdakı karta (UniBank/Leo) edin və məlumatları doldurun:</p>
     <code style="font-size:24px; color:#00ffcc;">{KART_NOMRE}</code>
 </div>
 """, unsafe_allow_html=True)
@@ -71,7 +72,6 @@ name = st.text_input("Ad (Kodu almaq üçün mütləqdir):", placeholder="Məsə
 soyad = st.text_input("Soyad (Könüllü):", placeholder="Məsələn: Məmmədov")
 
 st.markdown("#### 📅 Doğum Tarixi")
-# İlləri məhdudlaşdırırıq: 1940-dan indiki ildən 3 il əvvələ qədər
 cari_il = datetime.now().year
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -79,26 +79,44 @@ with col1:
 with col2:
     ay = st.selectbox("Ay", list(range(1, 13)))
 with col3:
-    il = st.selectbox("İl", list(range(1940, cari_il - 2))) # 3 yaşından 86 yaşına qədər
+    il = st.selectbox("İl", list(range(1940, cari_il - 2)))
 
 user_burc = burc_tap(gun, ay)
 
-# ================== KOD GENERATORU ==================
+# ================== TƏHLÜKƏSİZ KOD GENERATORU ==================
 if name:
     st.markdown("---")
-    st.write("### 🔑 Giriş Kodunuzu Buradan Götürün")
+    st.write("### 🔑 Giriş Kodunu Aktivləşdir")
+    
+    # 1. Psixoloji Baryer: Qəbz rəqəmi tələbi
+    cek_no = st.text_input("🧾 Ödəniş qəbzinin son 4 rəqəmini daxil edin:", placeholder="Məsələn: 4582")
+    
+    # 2. Xəbərdarlıq mətni
+    st.warning("⚠️ Diqqət: Sistem bank terminalları ilə sinxronizasiya olunub. Ödəniş etmədən saxta məlumat daxil edənlərin girişi avtomatik bloklanır.")
+    
     if st.checkbox("✅ 1 AZN ödəniş etdiyimi təsdiqləyirəm"):
-        indi = datetime.now()
-        bu_saat = indi.hour
-        gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
-        
-        # Məntiq: ad + gün + saat + gizlisöz
-        hazir_kod = f"{name.strip().lower()}{indi.day}{bu_saat}{gizli_s.lower()}"
-        
-        st.success(f"Təşəkkürlər! Giriş kodunuz: **{hazir_kod}**")
-        st.caption(f"Qeyd: Bu kod saat {bu_saat}:59-a qədər aktivdir.")
+        if len(cek_no) < 2:
+            st.error("❗ Zəhmət olmasa qəbzin son 4 rəqəmini daxil edin!")
+        else:
+            # 3. Gözləmə Simulyasiyası (10 saniyə)
+            with st.status("🔍 Ödəniş bank sistemi ilə yoxlanılır...", expanded=True) as status:
+                time.sleep(4)
+                st.write("📡 Bank serverinə qoşulur...")
+                time.sleep(3)
+                st.write("💹 Əməliyyat ID-si yoxlanılır...")
+                time.sleep(3)
+                status.update(label="✅ Ödəniş təsdiqləndi!", state="complete", expanded=False)
+            
+            indi = datetime.now()
+            bu_saat = indi.hour
+            gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
+            hazir_kod = f"{name.strip().lower()}{indi.day}{bu_saat}{gizli_s.lower()}"
+            
+            st.success(f"Təşəkkürlər! Giriş kodunuz: **{hazir_kod}**")
+            st.info(f"💡 Bu kod saat {bu_saat}:59-a qədər aktivdir. Kodu kopyalayıb aşağıdakı xanaya yazın.")
+            st.toast("Ödəniş qeydə alındı!", icon='💰')
 else:
-    st.info("ℹ️ Kodu görmək üçün yuxarıda 'Ad' bölməsini doldurun.")
+    st.info("ℹ️ Kodu görmək üçün əvvəlcə yuxarıda 'Ad' bölməsini doldurun.")
 
 # ================== FAL BÖLMƏSİ ==================
 st.write("---")
@@ -112,7 +130,6 @@ if st.button("✨ Taleyi Oxu"):
         kecen_saat = bu_saat - 1 if bu_saat > 0 else 23
         gizli_s = GIZLI_SOZLER.get(indi.month, "Zirve")
         
-        # Kod yoxlaması
         correct_codes = [
             f"{name.strip().lower()}{bugun}{bu_saat}{gizli_s.lower()}",
             f"{name.strip().lower()}{bugun}{kecen_saat}{gizli_s.lower()}"
@@ -126,9 +143,9 @@ if st.button("✨ Taleyi Oxu"):
                              f"Yaşı: {yas}, Bürcü: {user_burc}. ")
                     
                     if yas < 12:
-                        prompt += f"Bu uşaqdır. Onun gələcək istedadları, xarakteri və təhsili haqqında valideynlərinə maraqlı və müsbət bir fal yaz."
+                        prompt += "Bu uşaqdır. Onun gələcək istedadları və xarakteri haqqında valideynlərinə maraqlı fal yaz."
                     else:
-                        prompt += f"Bu şəxs üçün sirli, poetik və bürcünə ({user_burc}) uyğun bir fal yaz."
+                        prompt += f"Bu şəxs üçün sirli, poetik və {user_burc} bürcünə uyğun fal yaz."
                     
                     completion = client.chat.completions.create(
                         model="llama-3.3-70b-versatile",
